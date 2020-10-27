@@ -5,7 +5,6 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import com.udacity.jwdnd.course1.cloudstorage.model.File;
 import com.udacity.jwdnd.course1.cloudstorage.services.FileService;
 import java.io.IOException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -38,13 +37,25 @@ public class FileController {
     file.setContentType(multipartFile.getContentType());
     file.setFileSize(String.valueOf(multipartFile.getSize()));
     file.setUserId(userId);
+
+    String uploadError = null;
     try {
       file.setFileData(multipartFile.getBytes());
-      fileService.createFile(file);
-      model.addAttribute("actionSuccess", true);
+      final int changes = fileService.createFile(file);
+      if (changes < 1) {
+        uploadError = "You file upload was not saved, please use unique names";
+      }
     } catch (IOException e) {
-      model.addAttribute("actionError", true);
+      uploadError = "Problem uploading file";
     }
+
+    if (uploadError == null) {
+      model.addAttribute("actionSuccess", true);
+    } else {
+      model.addAttribute("actionError", true);
+      model.addAttribute("errorMessage", uploadError);
+    }
+
 
     return "result";
   }

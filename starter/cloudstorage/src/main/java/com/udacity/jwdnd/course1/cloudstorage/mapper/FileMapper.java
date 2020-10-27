@@ -11,8 +11,8 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface FileMapper {
 
-  @Select("SELECT * FROM FILES WHERE userId = #{userId}")
-  File getFile(int fileId);
+  @Select("SELECT * FROM FILES WHERE userId = #{userId} AND fileId = #{fileId}")
+  File getFile(int userId, int fileId);
 
   @Select("SELECT * FROM FILES WHERE userId = #{userId}")
   List<File> getUserFiles(int userId);
